@@ -41,7 +41,12 @@ module OmniAuth
 
       def request_phase
         # params = client.auth_code.authorize_params.merge(redirect_uri: callback_url).merge(authorize_params)
-        fix_redirect_uri = callback_url.gsub(/https:.*profile.auth.wechat/, 'https://wechat-staging.letote.cn/profile/auth/wechat')
+        fix_redirect_uri = params['fix_redirect_uri']
+        if fix_redirect_uri.present?
+          fix_redirect_uri = callback_url.gsub(/http.*profile.auth.wechat/, fix_redirect_uri)
+        else
+          fix_redirect_uri = callback_url.gsub(/http.*profile.auth.wechat/, 'https://wechat-staging.letote.cn/profile/auth/wechat')
+        end
         params = client.auth_code.authorize_params.merge(redirect_uri: fix_redirect_uri).merge(authorize_params)
         params["appid"] = params.delete("client_id")
         redirect client.authorize_url(params)
