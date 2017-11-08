@@ -54,9 +54,28 @@ describe OmniAuth::Strategies::WechatQiye do
     end
   end
 
-  describe "#request_phase" do
+  describe "#request_phase if has fix_redirect_uri" do
     specify "redirect uri includes 'appid', 'redirect_uri', 'response_type', 'scope', 'state' and 'wechat_redirect' fragment " do
-      callback_url = "http://exammple.com/callback"
+      callback_url = "http://wechat-staging1.letote.cn/profile.auth.wechat?fix_redirect_uri=http://wechat-staging.letote.cn/profile.auth.wechat"
+
+      subject.stub(:callback_url=>callback_url)
+      subject.should_receive(:redirect).with do |redirect_url|
+        uri = URI.parse(redirect_url)
+        expect(uri.fragment).to eq("wechat_redirect")
+        params = CGI::parse(uri.query)
+        expect(params["appid"]).to eq(['corpid'])
+        expect(params["redirect_uri"]).to eq(['http://wechat-staging.letote.cn/profile.auth.wechat'])
+        expect(params["response_type"]).to eq(['code'])
+        expect(params["scope"]).to eq(['snsapi_userinfo'])
+        expect(params["state"]).to eq([subject.session['omniauth.state']])
+      end
+
+      subject.request_phase
+    end
+  end
+  describe "#request_phase if has no fix_redirect_uri" do
+    specify "redirect uri includes 'appid', 'redirect_uri', 'response_type', 'scope', 'state' and 'wechat_redirect' fragment " do
+      callback_url = "https://wechat-staging.letote.cn/profile/auth/wechat"
 
       subject.stub(:callback_url=>callback_url)
       subject.should_receive(:redirect).with do |redirect_url|
