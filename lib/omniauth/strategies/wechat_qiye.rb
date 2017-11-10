@@ -41,7 +41,7 @@ module OmniAuth
 
       def request_phase
         # params = client.auth_code.authorize_params.merge(redirect_uri: callback_url).merge(authorize_params)
-        array = Rack::Utils.parse_query URI(callback_url).query
+        array = Rack::Utils.parse_query callback_url
         unless array['fix_redirect_uri'].nil?
           callback_url.gsub!(/http.*profile.auth.wechat/, array['fix_redirect_uri'])
         end

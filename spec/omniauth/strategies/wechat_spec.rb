@@ -57,7 +57,7 @@ describe OmniAuth::Strategies::Wechat do
 
   describe "#request_phase if has fix_redirect_uri" do
     specify "redirect uri includes 'appid', 'redirect_uri', 'response_type', 'scope', 'state' and 'wechat_redirect' fragment " do
-      callback_url = "http://wechat-staging1.letote.cn/profile.auth.wechat?fix_redirect_uri=http://wechat-staging.letote.cn/profile.auth.wechat"
+      callback_url = "http://wechat-staging1.letote.cn/profile.auth.wechat&fix_redirect_uri=http://wechat-staging.letote.cn/profile.auth.wechat"
       subject.stub(:callback_url=>callback_url)
       subject.should_receive(:redirect).with do |redirect_url|
         uri = URI.parse(redirect_url)
