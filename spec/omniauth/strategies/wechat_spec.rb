@@ -57,14 +57,14 @@ describe OmniAuth::Strategies::Wechat do
 
   describe "#request_phase if has fix_redirect_uri" do
     specify "redirect uri includes 'appid', 'redirect_uri', 'response_type', 'scope', 'state' and 'wechat_redirect' fragment " do
-      callback_url = "http://wechat-staging1.letote.cn/profile.auth.wechat&fix_redirect_uri=http://wechat-staging.letote.cn/profile.auth.wechat"
+      callback_url = "http://localhost:3000/profile/auth/wechat?return_uri=https%3A%2F%2Fwechat-staging2.letote.cn%2Fprofile.auth.wechat%2F&fix_redirect_uri=https%3A%2F%2Fwechat-staging1.letote.cn%2Fprofile%2Fauth%2Fwechat"
       subject.stub(:callback_url=>callback_url)
       subject.should_receive(:redirect).with do |redirect_url|
         uri = URI.parse(redirect_url)
         expect(uri.fragment).to eq("wechat_redirect")
         params = CGI::parse(uri.query)
         expect(params["appid"]).to eq(['appid'])
-        expect(params["redirect_uri"]).to eq(['http://wechat-staging.letote.cn/profile.auth.wechat'])
+        expect(params["redirect_uri"]).to eq(['https://wechat-staging1.letote.cn/profile/auth/wechat/callback?return_uri=https%3A%2F%2Fwechat-staging2.letote.cn%2Fprofile.auth.wechat%2F'])
         expect(params["response_type"]).to eq(['code'])
         expect(params["scope"]).to eq(['snsapi_userinfo'])
         expect(params["state"]).to eq([subject.session['omniauth.state']])
